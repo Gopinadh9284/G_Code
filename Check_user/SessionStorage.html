@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Shopping Cart</h1>
+  <ul id="cartItems"></ul>
+  <label for="product">Add Product:</label>
+  <input type="text" id="product" placeholder="Product name">
+  <button onclick="addToCart()">Add to Cart</button>
+
+  <script>
+    // Function to update the cart display
+    function updateCartDisplay() {
+      const cartItemsElement = document.getElementById('cartItems');
+      const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+      
+
+
+      // Clear previous content
+      cartItemsElement.innerHTML = '';
+
+      // Display current cart items
+      cartItems.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.textContent = item;
+        cartItemsElement.appendChild(listItem);
+      });
+    }
+
+    // Function to add a product to the cart
+    function addToCart() {
+      const productInput = document.getElementById('product');
+      const productName = productInput.value.trim();
+
+      if (productName) {
+        const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+        cartItems.push(productName);
+        sessionStorage.setItem('cart', JSON.stringify(cartItems));
+        console.log(cartItems);
+
+        // Update the cart display
+        updateCartDisplay();
+
+        // Clear the input field
+        productInput.value = '';
+      }
+    }
+
+    // Call the function to set up the page
+    updateCartDisplay();
+  </script>
+
+</body>
+</html>

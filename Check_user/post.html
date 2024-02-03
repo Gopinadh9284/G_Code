@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Data</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<a href="#" onclick="showSearch()">Get Employee Data</a>
+
+<div id="searchContainer" class="hidden">
+    <input type="text" id="searchInput" placeholder="Search...">
+    <!-- <button onclick="searchData()">Search</button> -->
+    <!-- <input type="text" id="searchInput" placeholder="Search..."> -->
+    <button onclick="generateReport()">Generate Report</button>
+</div>
+
+<table id="employeeTable" border="1">
+    <thead id="tableHeaders" class="hidden">
+        <!-- Table headers will be loaded here -->
+    </thead>
+    <tbody id="employeeTableBody">
+        <!-- Data will be loaded here -->
+    </tbody>
+</table>
+<div id="addEmployeeForm" class="hidden">
+    <h2>Add Employee</h2>
+    <label for="name">ID:</label>
+    <input type="number" id="fghjk" name="name" required>
+    <label for="name">Name:</label>
+    <input type="text" id="pole_material" name="name" required>
+    <label for="name">ploelan:</label>
+    <input type="number" id="pole_lat" name="name" required>
+    <label for="name">polela:</label>
+    <input type="number" id="pole_lon" name="name" required>
+    <label for="name">remarks:</label>
+    <input type="text" id="pole_remarks" name="name" required>
+   
+   
+    <!-- Add more input fields as needed -->
+    <button onclick="addEmployee()">Add Employee</button>
+</div>
+<script>
+    let originalData = [];  // Store the original data for resetting the table
+
+    function showSearch() {
+        // Show the search container and table headers
+        document.getElementById('searchContainer').classList.remove('hidden');
+        document.getElementById('tableHeaders').classList.remove('hidden');
+        document.getElementById('addEmployeeForm').classList.remove('hidden');
+        loadEmployeeData();
+        $("#gopi").hide();
+   
+    }
+
+    function loadEmployeeData() {
+        // Use AJAX to fetch employee data
+        fetch('http://localhost:8080/getPoles')
+            .then(response => response.json())
+            .then(data => {
+                originalData = data;  // Store the original data
+                updateTable(data);
+            })
+            .catch(error => console.error('Error fetching employee data:', error));
+    }
+
+    function updateTable(data) {
+        // Clear existing table data and headers
+        const tableHeaders = document.getElementById('tableHeaders');
+        const tableBody = document.getElementById('employeeTableBody');
+        tableHeaders.innerHTML = '';
+        tableBody.innerHTML = '';
+
+        // Check if table headers are already present
+        if (tableHeaders.children.length === 0) {
+            // If headers are not present, create them
+            const row = tableHeaders.insertRow();
+            // Create headers based on the keys of the first employee object
+            Object.keys(data[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = key;
+                row.appendChild(th);
+            });
+        }
+
+        // Update the table with the fetched employee data
+        data.forEach(employee => {
+            const row = tableBody.insertRow();
+            // Add cells dynamically based on the keys
+            Object.keys(employee).forEach(key => {
+                const cell = row.insertCell();
+                cell.innerHTML = employee[key];
+            });
+        });
+    }
+
+  /*  function searchData() {
+        // const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        // const filteredData = originalData.filter(employee => {
+        //     return Object.values(employee).some(value =>
+        //         value.toString().toLowerCase().includes(searchTerm)
+        //     );
+        // });
+    }*/
+
+    function generateReport() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            // Simulated data from a database
+            const originalData = Array.from(document.getElementById('employeeTable').getElementsByTagName('tbody')[0].rows).map(row => ({
+                name: row.cells[0].textContent,
+                category: row.cells[1].textContent,
+            }));
+
+            // Filter data based on the search term
+            const filteredData = originalData.filter(item => {
+                // Customize this condition based on your data structure and search criteria
+                return item.name.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm);
+            });
+
+            // Create a worksheet
+            const ws = XLSX.utils.json_to_sheet(filteredData);
+
+            // Create a workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+            // Generate Excel file
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+            // Save the file
+            saveAsExcelFile(excelBuffer, 'searched_report.xlsx');
+        }
+
+        function saveAsExcelFile(buffer, fileName) {
+            const blob = new Blob([buffer], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+
+
+
+    function addEmployee() {
+        const pole_material = document.getElementById('pole_material').value;
+        const pole_lat = document.getElementById('pole_lat').value;
+        const pole_lon = document.getElementById('pole_lon').value;
+        const pole_remarks = document.getElementById('pole_remarks').value;
+        // Get other input values as needed
+
+        // Add the new employee to the original data
+        const newEmployee = { 'pole_material': pole_material,
+						'pole_lat': pole_lat,
+						'pole_lon': pole_lon,
+						'pole_remarks': pole_remarks };
+        originalData.push(newEmployee);
+
+        // Update the table with the new data
+        updateTable(originalData);
+
+        // Clear the form fields
+        document.getElementById('pole_material').value = '';
+        document.getElementById('pole_lat').value = '';
+        document.getElementById('pole_lon').value = '';
+        document.getElementById('pole_remarks').value = '';
+        // Clear other form fields as needed
+
+        // Send the new employee data to the server
+        sendEmployeeData(newEmployee);
+    }
+
+    function sendEmployeeData(employeeData) {
+        fetch('http://localhost:8080/createPole', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employeeData),
+        })
+        .then(response => response.json())
+        .then(data => console.log('Successfully added employee:', data))
+        .catch(error => console.error('Error adding employee:', error));
+    }
+
+
+   /* function generateReport() {
+    // Replace 'your-api-endpoint' with the actual URL that provides the table data
+    const apiUrl = 'http://localhost:8080/getPoles';
+
+    // Fetch table data from the API
+    axios.get(apiUrl)
+        .then(response => {
+            const data = response.data;
+
+            // Create a worksheet
+            const ws = XLSX.utils.json_to_sheet(data);
+
+            // Create a workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+            // Generate Excel file
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+            // Save the file
+            saveAsExcelFile(excelBuffer, 'report.xlsx');
+        })
+        .catch(error => {
+            console.error('Error fetching table data:', error);
+        });
+}
+
+function saveAsExcelFile(buffer, fileName) {
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    
+    document.body.appendChild(a);
+    a.click();
+    
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}*/
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>User Management System</h2>
+    
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+
+        <label for="roles">Roles:</label>
+        <input type="text" id="roles" required>
+
+        <button type="button" onclick="addUser()">Add User</button>
+    </form>
+
+    <h3>User List</h3>
+    <ul id="userList"></ul>
+
+  <!-- Add this div for the loader -->
+<div id="loader" style="display: none;">
+    <img src="images/loading.gif" alt="Loading..." width="50">
+    <p>Loading...</p>
+</div>
+
+
+    <script>
+       /* function addUser() {
+            // Get input values
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var roles = document.getElementById('roles').value;
+
+            // Create user object
+            var user = {
+                name: name,
+                email: email,
+                password: password,
+                roles: roles
+            };
+
+            // Display user details in the list
+            var userList = document.getElementById('userList');
+            var listItem = document.createElement('li');
+            listItem.textContent = `Name: ${user.name}, Email: ${user.email}, Roles: ${user.roles}`;
+            userList.appendChild(listItem);
+
+            // Clear input fields
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('roles').value = '';
+        }*/
+
+        function addUser() {
+            document.getElementById('loader').style.display = 'block';
+    // Get input values
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+    var roles = document.getElementById('roles').value;
+
+    // Create user object
+    var user = {
+        name: name,
+        email: email,
+        password: password,
+        roles: roles
+    };
+
+            var userList = document.getElementById('userList');
+            var listItem = document.createElement('li');
+            listItem.textContent = `Name: ${user.name}, Email: ${user.email}, Roles: ${user.roles}`;
+            userList.appendChild(listItem);
+
+            // Clear input fields
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('roles').value = '';
+
+    // Send POST request to the server
+    fetch('https://localhost:8080/auth/addNewUser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('User added successfully:', data);
+        // Display user details in the list (optional)
+        var userList = document.getElementById('userList');
+        var listItem = document.createElement('li');
+        listItem.textContent = `Name: ${user.name}, Email: ${user.email}, Roles: ${user.roles}`;
+        userList.appendChild(listItem);
+        // Clear input fields
+        document.getElementById('name').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('roles').value = '';
+    })
+    .catch(error => {
+        console.error('There was a problem adding the user:', error);
+    })
+    .finally(() => {
+        // Hide loader
+        document.getElementById('loader').style.display = 'none';
+    });
+}
+
+
+    </script>
+</body>
+</html>

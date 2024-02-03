@@ -1,0 +1,83 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Sample Project</title>
+    <style>
+        /* Add your styles here */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Books in the Library</h1>
+    
+    <ul id="bookList">
+        <!-- Book details will be dynamically added here -->
+    </ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Load XML file
+            const xmlFile = 'books.xml';
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    displayBooks(xhttp.responseText);
+                    //console.log(xhttp.responseText)
+                }
+            };
+            xhttp.open('GET', xmlFile, true);
+            xhttp.send();
+        });
+
+        function displayBooks(xml) {
+            //console.log(xml)
+            const bookList = document.getElementById('bookList');
+            const books = xml.getElementsByTagName('library');
+            console.log(library);
+
+            for (let i = 0; i < books.length; i++) {
+             const book = books[i];
+             const title = book.querySelector('title').textContent;
+             const author = book.querySelector('author').textContent;
+             const publicationYear = book.querySelector('publicationYear').textContent;
+
+                const bookItem = document.createElement('li');
+                bookItem.innerHTML = `
+                    <strong>Title:</strong> ${title}<br>
+                    <strong>Author:</strong> ${author}<br>
+                    <strong>Publication Year:</strong> ${publicationYear}
+                `;
+
+                bookList.appendChild(bookItem);
+            }
+        }
+
+        
+
+        
+    </script>
+
+</body>
+</html>

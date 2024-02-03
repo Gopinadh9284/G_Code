@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Check</title>
+</head>
+<body>
+
+<h1>User Login</h1>
+
+<label for="username">Enter username:</label>
+<input type="text" id="usernameInput"><br>
+
+<label for="password">Enter password:</label>
+<input type="password" id="passwordInput"><br>
+
+<button onclick="checking()">Login</button>
+<p id="checkd"> </p>
+<script>
+  const users = [
+    { username: 'Gopinadh', password: '123' },
+    { username: 'user2', password: 'password2' },
+    { username: 'user3', password: 'password3' }
+  ];
+
+  function checkCredentials() {
+    const usernameInput = document.getElementById('usernameInput').value;
+    const passwordInput = document.getElementById('passwordInput').value;
+
+    const user = users.find(u => u.username === usernameInput && u.password === passwordInput);
+
+    if (usernameInput==""||passwordInput =="") {
+        alert('Eneter username&password!');
+    }else if(user){
+        alert(`Welcome, ${usernameInput}!`);
+    } else {
+      alert(`Invalid username or password.`);
+    }
+  }
+
+
+function checkUser(val) {
+    const values=[2,4,5,6];
+    return values.includes(val);
+
+   
+  }
+   
+  function checking(){
+   
+    document.getElementById('checkd').innerHTML=values;
+  }
+</script>
+
+</body>
+</html>

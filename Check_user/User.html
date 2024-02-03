@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login/Signup Dialog</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #dialog {
+      display: none;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 100px;
+      border-radius: 5px;
+    }
+
+    #dialogThree {
+      display: none;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 100px;
+      border-radius: 5px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: inline-block;
+      width: 100px; 
+    }
+
+    .form-group input {
+      width: 200px; 
+      box-sizing: border-box;
+      padding: 5px;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #signup-link {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #signup-link a {
+      color: #4caf50;
+      text-decoration: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<button onclick="openDialog()" id="dailoghide">User Application</button>
+
+<div id="dialog" class="form-group">
+  <h2>Login</h2>
+  
+  <label for="username">Username:</label>
+  <span><input type="text" id="username" placeholder="Enter your username"></span>
+
+ <br><br/>
+  <label for="password">Password:</label>
+  <input type="password" id="password" placeholder="Enter your password">
+  <br><br/>
+  <button onclick="login()">Login</button>
+
+  <div id="signup-link">
+    Don't have an account? <a href="#" onclick="showSignupForm()">Sign up</a>
+  </div>
+</div>
+
+<div id="dialogTwo">
+
+    <button onclick="downloadExcel()" id="Excels">Download Excel</button>
+
+</div>
+
+<div id="dialogThree">
+    <h2>Login</h2>
+    <label for="name">Username:</label>
+    <input type="text" id="name" placeholder="Enter your username">
+    <br><br/>
+    <label for="password">Password:</label>
+    <input type="password" id="passwords" placeholder="Enter your password">
+    <br><br/>
+    <label for="email">Email:</label>
+    <input type="email" id="emailid" placeholder="Enter your email">
+    <br><br/>
+    <label for="role">Role:</label>
+    <input type="role" id="role" placeholder="Enter your role">
+    <br><br/>
+    <button onclick="Register()">Register</button>
+    <button onclick="Back()" id="back">Back</button>
+    <div id="signup-link">
+      Don't have an account? <a href="#" onclick="showSignupForm()">Sign up</a>
+    </div>
+  </div>
+  <div id="loader" style="display: none;">
+    <img src="images/loading.gif" alt="Loading..." width="50">
+    <p>Loading...</p>
+</div>
+     
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+   $("#Excels").hide();
+   $("#username").val("");
+   $("#dialogThree").hide();
+  function openDialog() {
+    $("#dailoghide").hide();
+    $("#dialogThree").hide();
+    $("#dialog").css("display", "block");
+  }
+
+function Back(){
+    $("#dialogThree").hide();
+    $("#dialog").show();
+  }
+function afterlogin(){
+
+  document.getElementById('loader').style.display = 'none';
+ $("#dailoghide").hide();
+ $("#dialog").hide();
+ $("#Excels").css("display", "block");
+ $("#dialogTwo").css("display", "block");
+}
+
+function login() {
+  document.getElementById('loader').style.display = 'block';
+  
+    if ($("#username").val().length == 0 || $("#password").val().length == 0) {
+        return alert("Please enter username && password");
+    }
+    var username = $("#username").val();
+    fetch(`https://localhost:8080/auth/findUser/${username}`, {
+        method: "GET",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+    .then(response => response.text())
+    .then(response => {
+        response = JSON.parse(response);
+        if (response.userExists == true) {         
+            fetch("https://localhost:8080/auth/generateToken", {
+                method: "POST",
+                body: JSON.stringify({
+                    username: username,
+                    password: $("#password").val(),
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+            .then(json => json.text())
+            .then(json => {
+              if(json !="" && response.userExists == true)
+              {
+                afterlogin();
+              }else{
+                alert("User password wrong")
+              }
+                
+            });
+        } else {
+            alert("User does not exist");
+        }
+    })
+    .catch(error => {
+        console.error("Login failed:", error);
+    });
+}
+
+
+  function showSignupForm() {
+    $("#dialog").hide();
+    $("#dialogThree").css("display", "block");
+  }
+
+
+  function downloadExcel(){
+    document.getElementById('loader').style.display = 'none';
+    const url = 'https://localhost:8080/auth/excel';
+   fetch(url)
+  .then(response => {
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  const contentDispositionHeader = response.headers.get('Content-Disposition');
+  const filename = contentDispositionHeader ? contentDispositionHeader.split('filename=')[1] : 'Gopi.xls';
+
+  return response.blob().then(blob => ({ blob, filename }));
+  })
+  .then(({ blob, filename }) => {
+  const link = document.createElement('a');
+  const blobUrl = window.URL.createObjectURL(blob);
+
+  link.href = blobUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  window.URL.revokeObjectURL(blobUrl);
+  })
+  .catch(error => {
+ 
+  console.error('Error downloading Excel file:', error);
+  });
+
+
+}
+
+/*function Register(){
+
+    if($("#name").val().length==0 || $("#passwords").val().length==0){
+    return alert("Please enter username&&password");
+    }else   if($("#emailid").val().length==0 || $("#role").val().length==0) {
+        return alert("Please enter email&&role");
+    }
+    var name = $("#name").val();
+    var password = $("#password").val();
+    var email = $("#emailid").val();
+    var roles = $("#role").val();
+
+    fetch("https://localhost:8080/auth/addNewUser", {
+     // Adding method type
+     method: "POST",  
+     // Adding body or contents to send
+     body: JSON.stringify({
+        name: name,
+        password: password,
+        email:email,
+        roles:roles
+
+     }),
+     headers: {
+         "Content-type": "application/json; charset=UTF-8"
+     } 
+ })
+ .then(response => response.json())
+ .then(json => console.log(json));
+}*/ 
+function Register() {
+    const username = $("#name").val();
+    const password = $("#passwords").val();
+    const email = $("#emailid").val();
+    const roles = $("#role").val();
+
+    if (username.length === 0 || password.length === 0 || email.length === 0 || roles.length === 0) {
+        return alert("Please enter all required fields");
+    }
+
+    // Check if the user already exists
+    fetch(`https://localhost:8080/auth/findUser/${username}`, {
+        method: "GET",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+    .then(response => response.json())
+    .then(response => {
+      console.log(response)
+        if (response.userExists == true) {
+          alert ("User already exists");
+        } else {
+            // If the user doesn't exist, proceed to add a new user
+            return fetch("https://localhost:8080/auth/addNewUser", {
+                method: "POST",
+                body: JSON.stringify({
+                    name: username,
+                    password: password,
+                    email: email,
+                    roles: roles
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+        }
+    })
+    .then(response => response.json())
+    .then(json =>{
+ 
+    alert("json")
+    })
+    .catch(error => {
+        console.error("Error:", error.message);
+        // Handle errors more gracefully, e.g., update UI with an error message.
+    });
+}
+
+
+
+</script>
+
+</body>
+</html>

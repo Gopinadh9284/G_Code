@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Excel Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+    <style>
+     #searchBtn{
+        margin: -22px 0px 7px 163px;
+
+     }
+     #generateReportBtn{
+        margin: -29px 28px 6px 222px;
+     }
+
+     table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+    </style>
+</head>
+<body>
+    <button onclick="loadData()" id="loadhide">Load Data</button>
+<div>
+   
+    <input type="text" id="searchInput" placeholder="Search..." disabled>
+    <button onclick="searchData()" disabled id="searchBtn">Search</button>
+    <button onclick="generateReport()" disabled id="generateReportBtn">Generate Report</button>
+</div>
+    <table id="dataTable" >
+        <thead id="tableHeaders" class="hidden">
+            
+        </thead>
+        <tbody id="employeeTableBody">
+        </tbody>
+    </table>
+    
+    <script>
+            document.getElementById('searchInput').style.display = 'none';
+            document.getElementById('generateReportBtn').style.display = 'none';
+            document.getElementById('searchBtn').style.display = 'none';
+           //document.getElementById('searchdatas').style.display = 'none';
+        let allData = [];
+        let filteredData = [];
+        function loadData() {
+           
+            const apiUrl = 'http://localhost:8080/getPoles';
+            axios.get(apiUrl)
+                .then(response => {
+                    allData = response.data;
+                    displayTable(allData);
+                    document.getElementById('searchInput').disabled = false;
+                    document.getElementById('searchBtn').disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error fetching table data:', error);
+                });
+                
+        }
+        /*function displayTable(data) {
+            document.getElementById('searchInput').style.display = 'block';
+            document.getElementById('generateReportBtn').style.display = 'block';
+            document.getElementById('searchBtn').style.display = 'block';
+           // document.getElementById('searchdatas').style.display = 'block';
+            document.getElementById('loadhide').style.display = 'none';
+        // Clear existing table data and headers
+        const tableHeaders = document.getElementById('tableHeaders');
+        const tableBody = document.getElementById('employeeTableBody');
+        tableHeaders.innerHTML = '';
+        tableBody.innerHTML = '';
+
+        // Check if table headers are already present
+        if (tableHeaders.children.length === 0) {
+            // If headers are not present, create them
+            const row = tableHeaders.insertRow();
+            // Create headers based on the keys of the first employee object
+            Object.keys(data[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = key;
+                row.appendChild(th);
+            });
+        }
+
+        // Update the table with the fetched employee data
+        data.forEach(employee => {
+            const row = tableBody.insertRow();
+            // Add cells dynamically based on the keys
+            Object.keys(employee).forEach(key => {
+                const cell = row.insertCell();
+                cell.innerHTML = employee[key];
+            });
+        });
+    }*/
+
+
+    function displayTable(data) {
+    document.getElementById('searchInput').style.display = 'block';
+    document.getElementById('generateReportBtn').style.display = 'block';
+    document.getElementById('searchBtn').style.display = 'block';
+    document.getElementById('loadhide').style.display = 'none';
+
+    // Clear existing table data and headers
+    const tableHeaders = document.getElementById('tableHeaders');
+    const tableBody = document.getElementById('employeeTableBody');
+    tableHeaders.innerHTML = '';
+    tableBody.innerHTML = '';
+
+    // Check if table headers are already present
+    if (tableHeaders.children.length === 0) {
+        // If headers are not present, create them
+        const row = tableHeaders.insertRow();
+        // Create headers based on the keys of the first employee object
+        Object.keys(data[0]).forEach(key => {
+            const th = document.createElement('th');
+            th.textContent = key;
+            // Add 'sorttable' class to enable sorting
+            th.className = 'sorttable';
+            row.appendChild(th);
+        });
+
+        // Initialize the sorttable library after adding the headers
+        sorttable.makeSortable(document.getElementById('dataTable'));
+    }
+
+    // Update the table with the fetched employee data
+    data.forEach(employee => {
+        const row = tableBody.insertRow();
+        // Add cells dynamically based on the keys
+        Object.keys(employee).forEach(key => {
+            const cell = row.insertCell();
+            cell.innerHTML = employee[key];
+        });
+    });
+}
+
+
+        function searchData() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            filteredData = allData.filter(employee => {
+                return Object.values(employee).some(value =>
+                value.toString().toLowerCase().includes(searchTerm)
+                 );
+            });
+            displayTable(filteredData);
+            document.getElementById('generateReportBtn').disabled = false;
+        }
+
+        function generateReport() {
+            // Create a worksheet using filtered data
+            const ws = XLSX.utils.json_to_sheet(filteredData);
+
+            // Create a workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Pole');
+
+            // Generate Excel file
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+            // Save the file
+            saveAsExcelFile(excelBuffer, 'Pole.xlsx');
+        }
+
+        function saveAsExcelFile(buffer, fileName) {
+            const blob = new Blob([buffer], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        window.onload = function() {
+  document.getElementById('searchInput').value = '';
+
+  }
+
+    </script>
+</body>
+</html>

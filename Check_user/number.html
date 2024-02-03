@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+</head>
+<body>
+    <h1>Number Guessing Game</h1>
+    <p id="result"></p>
+    <input type="number" id="userGuess" placeholder="Your guess">
+    <button onclick="checkGuess()">Check Guess</button>
+
+    <script>
+        const secretNumber = Math.floor(Math.random() * 100) + 1;
+        function checkGuess() {
+            const userGuessInput = document.getElementById("userGuess");
+            const resultMessage = document.getElementById("result");
+
+            const userGuess = parseInt(userGuessInput.value);
+
+            const greeting = (person) => {
+            const name = person ? person.name : "stranger";
+            console.log(name);
+            return `Howdy, ${name}`;
+            };
+
+            console.log(greeting({ name: "Alice" })); // "Howdy, Alice"
+
+            console.log(greeting(null)); // "Howdy, stranger"
+
+            if (isNaN(userGuess)) {
+                resultMessage.textContent = "Please enter a valid number.";
+                alert("Please enter a valid number.")
+               
+            } else {
+                if (userGuess === secretNumber) {
+                    resultMessage.textContent = "Congratulations! You guessed the correct number!";
+                } else {
+                    resultMessage.textContent = `Try again. The correct number is ${secretNumber > userGuess ? "greater" : "smaller"}.`;
+                console.log(secretNumber);
+                }
+            }
+
+            userGuessInput.value = "";
+        }
+    </script>
+</body>
+</html>

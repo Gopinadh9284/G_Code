@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function show() {
+            var p = document.getElementById('pwd');
+            p.setAttribute('type', 'text');
+        }
+
+        function hide() {
+            var p = document.getElementById('pwd');
+            p.setAttribute('type', 'password');
+        }
+
+        var pwShown = 0;
+
+        document.getElementById("eye").addEventListener("click", function () {
+            if (pwShown == 0) {
+                pwShown = 1;
+                show();
+            } else {
+                pwShown = 0;
+                hide();
+            }
+        }, false);
+
+    //   $(document).ready(function(){
+    //     $("button").click(function(){
+    //       $("#div2").toggle();
+    //     });
+    //   });
+    </script>
+  </head>
+  <body>
+    <div>
+        <input type="password" placeholder="Password" id="pwd" class="masked" name="password" />
+    <button type="button" id="eye">
+    <img src="https://cdn0.iconfinder.com/data/icons/feather/96/eye-16.png" alt="eye" />
+</button>
+    </div>
+    <div id="div1">
+      <p>Some content</p>
+    </div>
+    <div id="div2" style="display:none;">
+      <p>Hidden content</p>
+    </div>
+    <button>Toggle</button>
+  </body>
+
+</html>

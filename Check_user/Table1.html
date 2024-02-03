@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Data</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+        /* #searchContainer{
+            color: blueviolet;
+        } */
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+
+<a href="#" id="gopi" onclick="showSearch()">Get Employee Data</a>
+
+<div id="searchContainer" class="hidden">
+    <input type="text" id="searchInput" placeholder="Search...">
+    <button type="button" class="btn btn-primary" onclick="searchData()">Search</button>
+    <button type="button" class="btn btn-primary" id="table">Primary</button>
+</div>
+<div id="addEmployeeForm" class="hidden">
+    <h2>Add Employee</h2>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="id">ID:</label>
+    <input type="text" id="id" name="id" required>
+    <!-- Add more input fields as needed -->
+    <button onclick="addEmployee()">Add Employee</button>
+</div>
+<table id="employeeTable" border="1">
+    <thead id="tableHeaders" class="hidden">
+        <!-- Table headers will be loaded here -->
+    </thead>
+    <tbody id="employeeTableBody">
+        <!-- Data will be loaded here -->
+    </tbody>
+</table>
+
+<script>
+    let originalData = [];  // Store the original data for resetting the table
+
+    function showSearch() {
+        // Show the search container and table headers
+        document.getElementById('searchContainer').classList.remove('hidden');
+        document.getElementById('tableHeaders').classList.remove('hidden');
+        loadEmployeeData();
+        addEmployee();
+        $("#gopi").hide();
+        $("#table").hide();
+        
+    }
+
+    function loadEmployeeData() {
+        // Use AJAX to fetch employee data
+        fetch('http://localhost:8080/getPoles')
+            .then(response => response.json())
+            .then(data => {
+                originalData = data;  // Store the original data
+                updateTable(data);
+            })
+            .catch(error => console.error('Error fetching employee data:', error));
+    }
+
+    function updateTable(data) {
+        // Clear existing table data and headers
+        const tableHeaders = document.getElementById('tableHeaders');
+        const tableBody = document.getElementById('employeeTableBody');
+        tableHeaders.innerHTML = '';
+        tableBody.innerHTML = '';
+
+        // Check if table headers are already present
+        if (tableHeaders.children.length === 0) {
+            // If headers are not present, create them
+            const row = tableHeaders.insertRow();
+            // Create headers based on the keys of the first employee object
+            Object.keys(data[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = key;
+                th.className = 'sorttable';
+                row.appendChild(th);
+            });
+            sorttable.makeSortable(document.getElementById('dataTable'));
+        }
+
+        // Update the table with the fetched employee data
+        data.forEach(employee => {
+            const row = tableBody.insertRow();
+            // Add cells dynamically based on the keys
+            Object.keys(employee).forEach(key => {
+                const cell = row.insertCell();
+                cell.innerHTML = employee[key];
+            });
+        });
+    }
+
+    function searchData() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filteredData = originalData.filter(employee => {
+            return Object.values(employee).some(value =>
+                value.toString().toLowerCase().includes(searchTerm)
+            );
+        });
+        updateTable(filteredData);
+    }
+
+    function addEmployee() {
+        const name = document.getElementById('name').value;
+        const id = document.getElementById('id').value;
+        // Get other input values as needed
+
+        // Add the new employee to the original data
+        const newEmployee = { name, id };
+        originalData.push(newEmployee);
+
+        // Update the table with the new data
+        updateTable(originalData);
+
+        // Clear the form fields
+        document.getElementById('name').value = '';
+        document.getElementById('id').value = '';
+        // Clear other form fields as needed
+
+        // Send the new employee data to the server
+        sendEmployeeData(newEmployee);
+    }
+
+    function sendEmployeeData(employeeData) {
+        fetch('/api/employees', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employeeData),
+        })
+        .then(response => response.json())
+        .then(data => console.log('Successfully added employee:', data))
+        .catch(error => console.error('Error adding employee:', error));
+    }
+
+
+
+</script>
+
+</body>
+</html>

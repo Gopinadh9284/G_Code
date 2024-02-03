@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Preferences Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      transition: background-color 0.5s;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>User Preferences</h1>
+  <label for="theme">Select Theme:</label>
+  <select id="theme">
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+
+  <script>
+    // Function to set a preference in localStorage
+    function setPreference(key, value) {
+      localStorage.setItem(key, value);
+    }
+
+    // Function to get a preference from localStorage
+    function getPreference(key) {
+      return localStorage.getItem(key);
+    }
+
+    // Function to update the page based on stored preferences
+    function updatePage() {
+      const themeSelector = document.getElementById('theme');
+      const storedTheme = getPreference('theme');
+
+      if (storedTheme) {
+        document.body.setAttribute('data-theme', storedTheme);
+        themeSelector.value = storedTheme;
+      }
+
+      themeSelector.addEventListener('change', function() {
+        const selectedTheme = themeSelector.value;
+        document.body.setAttribute('data-theme', selectedTheme);
+        setPreference('theme', selectedTheme);
+      });
+    }
+
+    // Call the function to set up the page
+    updatePage();
+  </script>
+
+</body>
+</html>

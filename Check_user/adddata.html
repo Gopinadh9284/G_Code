@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Data</title>
+</head>
+<body>
+
+<h2>Add Employee</h2>
+<form id="addEmployeeForm">
+    <label for="name">Name:</label>
+    <input type="text" id="pole_material" name="name" required>
+    <label for="name">ploelan:</label>
+    <input type="number" id="pole_lat" name="name" required>
+    <label for="name">polela:</label>
+    <input type="number" id="pole_lon" name="name" required>
+    <label for="name">remarks:</label>
+    <input type="text" id="pole_remarks" name="name" required>
+   
+    <!-- Add other input fields as needed -->
+    <button type="button" onclick="addEmployee()">Add Employee</button>
+</form>
+
+<script>
+    function addEmployee() {
+        const pole_material = document.getElementById('pole_material').value;
+        const pole_lat = document.getElementById('pole_lat').value;
+        const pole_lon = document.getElementById('pole_lon').value;
+        const pole_remarks = document.getElementById('pole_remarks').value;
+
+        const employeeData = {
+                        'pole_material': pole_material,
+						'pole_lat': pole_lat,
+						'pole_lon': pole_lon,
+						'pole_remarks': pole_remarks
+            // Add other properties as needed
+        };
+
+        // Send the new employee data to the server using a POST request
+        fetch('http://localhost:8080/createPole', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employeeData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Successfully added employee:', data);
+            // Optionally, you can update the UI or perform other actions after successful addition
+        })
+        .catch(error => console.error('Error adding employee:', error));
+    }
+</script>
+
+</body>
+</html>

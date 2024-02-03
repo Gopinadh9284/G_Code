@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #app {
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <title>Sample UI</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Sample User Interface</h1>
+        <p id="output">Click the button to change this text!</p>
+        <button onclick="changeText()">Click me</button>
+    </div>
+
+    <script>
+        function changeText() {
+            var outputElement = document.getElementById('output');
+            outputElement.textContent = 'Text changed!';
+        }
+    </script>
+</body>
+</html>

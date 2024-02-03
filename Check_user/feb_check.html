@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Check</title>
+</head>
+<body>
+
+<div>
+    <form >
+        <label for="username">Username:</label>
+        <input type="text" id="user" name="username">
+        <br><br>
+        <button id="sbtn" onclick="check()">Submit</button>
+    </form>
+</div>
+
+<script>
+  // Simulating static user data
+  const users = ['user1', 'user2', 'user3'];
+
+  // Function to check if a user exists
+  function checkUser(username) {
+    return users.includes(username);
+    
+  }
+  console.log(checkUser(username));
+
+  // Function to display alert message based on user existence
+  function showAlert(username) {
+    if (checkUser(username)) {
+      alert(`User "${username}" exists!`);
+    } else {
+      alert(`User "${username}" does not exist.`);
+    }
+  }
+
+  function check(){
+    const userInput = document.getElementById('user').value;
+    showAlert(userInput);
+   
+}
+</script>
+
+</body>
+</html>

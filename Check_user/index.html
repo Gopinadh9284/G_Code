@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+</head>
+<body>
+
+<h1>User Registration</h1>
+
+<form id="registrationForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <button type="button" onclick="checkUser()">Checkuser</button>
+    <span id="usernameError" style="color: red;"></span>
+    <br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <span id="passwordError" style="color: red;"></span>
+    <br>
+
+    <button type="button" onclick="registerUser()">Register</button>
+</form>
+
+<script>
+
+    function checkUser(){
+        var username = document.getElementById('username').value;
+        var isValid = validateInput(username, password);
+
+if (isValid) {
+    // Check if the user exists
+     checkUserExists(username)              
+        }
+
+    }
+    function registerUser() {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+
+        // Validate input
+        var isValid = validateInput(username, password);
+
+        if (isValid)
+
+                     // If the user does not exist, create the user
+                    createUser(username, password);
+                
+        
+    }
+    
+
+    function validateInput(username, password) {
+        // Implement your own validation logic here
+        var isValid = true;
+
+        // Example: Check if the username is at least 5 characters long
+        if (username=="") {
+            document.getElementById('usernameError').innerText = 'Please enter username.';
+            isValid = false;    
+        } else {
+            document.getElementById('usernameError').innerText = '';
+        }
+
+        // Example: Check if the password is at least 8 characters long
+       if (password=="") {
+            document.getElementById('passwordError').innerText = 'Password Required.';
+            isValid = false;
+        } else {
+            document.getElementById('passwordError').innerText = '';
+        }
+
+        return isValid;
+    }
+
+  
+// Replace 'your-server-url' with the actual URL of your server endpoint
+
+function checkUserExists(username)  {
+var serverUrl = `http://localhost:8080/exists/${username}`;
+    const xhr = new XMLHttpRequest(); 
+    // Configure the request as a GET request
+    xhr.open('GET', serverUrl, true);
+
+    // Set up a callback function to handle the response
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const userExists = JSON.parse(xhr.responseText);
+
+            if (userExists) {
+                console.log(`Username ${username} exists.`);
+                // Handle the case where the username exists
+            } else {
+                console.log(`Username ${username} does not exist.`);
+                // Handle the case where the username does not exist
+            }
+        } else {
+            console.error('Error checking username existence:', xhr.statusText);
+        }
+    };
+
+    // Send the request
+    xhr.send();
+}
+
+function createUser(username, password) {
+
+    checkUserExists(username)
+        .then(userExists => {
+            if (userExists) {
+                console.log(`Username ${username} already exists.`);
+                // Handle the case where the username already exists
+            } else {
+                // If the user does not exist, proceed with creating the user
+                const xhr = new XMLHttpRequest();
+
+                xhr.open('POST', 'http://localhost:8080/createPole' + 'create', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        console.log('User created successfully:', xhr.responseText);
+                        // Handle success, if needed
+                    } else {
+                        console.error('Error creating user:', xhr.statusText);
+                        // Handle the error
+                    }
+                };
+
+                const userData = {
+                    username: username,
+                    password: password
+                };
+
+                xhr.send(JSON.stringify(userData));
+            }
+        })
+        .catch(error => {
+            console.error(error.message);
+            // Handle the error
+        }); 
+    
+   
+
+}
+
+
+
+
+    // function checkUserExists(username) {
+        
+    //     fetch(`http://localhost:8080/exists/${username}`)
+    // .then(response => {
+    //     if (!response.ok) {
+    //         throw new Error('Network response was not ok');
+    //     }
+    //     return response.json();
+    // })
+    // .then(usernameExists => {
+    //     if (usernameExists) {
+    //         console.log(`Username  ${username} exists.`);
+    //         // Handle the case where the username exists
+    //     } else  {
+    //                  // If the user does not exist, create the user
+
+    //                   console.log(`Username ${username} doesn't exists.`);
+    //                 //createUser(username, password);
+    //               }
+    // })
+    // .catch(error => {
+    //     console.error('Error checking username existence:', error);
+    //     // Handle the error
+    // });
+   // }
+
+    // function createUser(username, password) {
+    //     // Replace 'your-api-endpoint' with the actual API endpoint for creating a user
+    //     fetch('http://localhost:8080/createPole', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({ username: username, password: password }),
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data) {
+    //         console.log(`Username  ${username} exists.`);
+    //         // Handle the case where the username exists
+    //     } else{
+    //         console.log('User created successfully:', data);
+    //     }
+
+    //       //  console.log('User created successfully:', data);
+    //         // You might want to redirect the user or perform other actions after successful registration
+    //     })
+    //     .catch(error => {
+    //         console.error('Error creating user:', error);
+    //         alert('Error creating user. Please try again.');
+    //     });
+    // }
+</script>
+
+</body>
+</html>
