@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>JavaScript Arrays</h1>
+<!-- <h2>The filter() Method</h2>
+
+<p>Click "Test" to get every element in the array that has a value above this number:</p>
+
+<p><input type="number" id="ageToCheck" value="40"></p>
+<button onclick="myFunction()">Test</button> -->
+<div id="geeks"></div>
+
+<div id="Geeks"></div>
+
+
+<button onclick=" myFunction()">
+  Click Here!
+</button>
+
+<style>
+  .democlass {
+    color: red;
+  }
+  </style>
+
+<script>
+
+function create() {
+            let geeks = document.createElement('democlass');
+            geeks.textContent = "Geeksforgeeks";
+            geeks.setAttribute('gopi','democlass');
+            document.body.appendChild(geeks);
+            geeks.style.color = 'blue';
+        }
+
+ let x;
+ for (x = 2; x <= 4; x++) {
+     console.log("Value of x:" + x);
+ }
+
+ let int1 = parseInt("1011", 2);
+ var int11=parseInt(1031.22);
+ console.log(int11);
+let int2 = parseInt("234", 8);
+
+console.log('Integer value is: ' + int1);
+console.log("integer value is: " + int2);
+
+console.log(parseInt("528GeeksforGeeks"));
+
+ // let petName = "Rocky"; //Global Variable
+       
+// let val=1
+// while(val<6)
+// {
+// console.log(val);
+// val+=1;
+// }
+
+let value = 1;
+do {
+    console.log(value);
+ 
+    value += 1;
+ 
+} while (value < 6);
+
+
+          function myFunction() {
+            let petName = "Rocky";
+            document.getElementById("geeks").innerHTML
+              = typeof petName + "- " +
+              "My pet name is " + petName;
+          }
+
+          document.getElementById("Geeks")
+            .innerHTML = typeof petName + "- " +
+            "My pet name is " + petName;
+
+// const books = [
+//     { title: 'The Catcher in the Rye', author: 'J.D. Salinger', year: 1951 },
+//     { title: 'To Kill a Mockingbird', author: 'Harper Lee', year: 1960 },
+//     { title: '1984', author: 'George Orwell', year: 1949 },
+//     { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', year: 1925 },
+// ];
+
+
+// const ages = [32, 33, 12, 40];
+
+// function checkAge(age) {
+//   var age = document.getElementById("ageToCheck").value;
+//   if(age=>40){
+//   alert("None");
+//   }else{
+//     alert("Noness");
+//   }
+// }
+
+// function myFunction() {
+//   checkAge(); 
+//   document.getElementById("demo").innerHTML = ages.filter(checkAge);
+// }
+</script>
+
+</body>
+</html>
